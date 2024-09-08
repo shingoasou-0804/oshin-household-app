@@ -1,8 +1,11 @@
+import { Box } from '@mui/material'
 import React from 'react'
 
 const Report = () => {
   return (
-    <div>Report</div>
+    <div>
+      <Box fontWeight={"fontWeightBold"}>Report</Box>
+    </div>
   )
 }
 
