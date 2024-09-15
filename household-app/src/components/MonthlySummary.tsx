@@ -2,13 +2,12 @@ import { Card, CardContent, Grid, Stack, Typography } from '@mui/material'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import BalanceIcon from '@mui/icons-material/Balance';
-import { Transaction } from '../../types';
-import { financeCalculations } from '../../utils/financeCalculations';
+import { Transaction } from '../types';
+import { financeCalculations } from '../utils/financeCalculations';
 
 interface MonthlySummaryProps {
   monthlyTransactions: Transaction[];
 }
-
 
 const MonthlySummary = ({monthlyTransactions}: MonthlySummaryProps) => {
   const {income, expense, balance} = financeCalculations(monthlyTransactions);
