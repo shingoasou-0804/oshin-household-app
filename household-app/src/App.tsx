@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Home from './pages/Home';
@@ -11,7 +11,6 @@ import { CssBaseline } from '@mui/material';
 import { Transaction } from './types/index';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
-import { format } from 'date-fns';
 import { formatMonth } from './utils/formatting';
 
 function App() {
@@ -21,23 +20,17 @@ function App() {
   }
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  console.log(currentMonth);
-  const a = format(currentMonth, "yyyy-MM");
-  console.log(a);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "Transactions"));
-        console.log(querySnapshot);
         const transactionsData = querySnapshot.docs.map((doc) => {
-          // console.log(doc.id, " => ", doc.data());
           return {
             ...doc.data(),
             id: doc.id,
           } as Transaction
         });
-        console.log(transactionsData);
         setTransactions(transactionsData);
       } catch (err) {
         if (isFireStoreError(err)) {
@@ -56,15 +49,13 @@ function App() {
     return transaction.date.startsWith(formatMonth(currentMonth));
   });
 
-  console.log(monthlyTransactions);
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Routes>
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Home monthlyTransactions={monthlyTransactions} />}/>
+            <Route index element={<Home monthlyTransactions={monthlyTransactions} setCurrentMonth={setCurrentMonth} />} />
             <Route path="/report" element={<Report />}/>
             <Route path="*" element={<NoMatch />}/>
           </Route>

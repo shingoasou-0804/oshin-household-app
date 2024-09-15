@@ -9,7 +9,6 @@ interface MonthlySummaryProps {
   monthlyTransactions: Transaction[];
 }
 
-
 const MonthlySummary = ({monthlyTransactions}: MonthlySummaryProps) => {
   const {income, expense, balance} = financeCalculations(monthlyTransactions);
   return (

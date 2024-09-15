@@ -28,5 +28,4 @@ export function calculateDailyBalances(transactions: Transaction[]): Record<stri
     acc[day].balance = acc[day].income - acc[day].expense
     return acc
   }, {})
-
 }
