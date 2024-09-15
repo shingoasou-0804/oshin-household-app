@@ -1,9 +1,9 @@
 import { Box } from '@mui/material'
 import React from 'react'
-import MonthlySummary from '../components/layout/MonthlySummary'
-import Calendar from '../components/layout/Calendar'
-import TransactionMenu from '../components/layout/TransactionMenu'
-import TransactionForm from '../components/layout/TransactionForm'
+import MonthlySummary from '../components/MonthlySummary'
+import Calendar from '../components/Calendar'
+import TransactionMenu from '../components/TransactionMenu'
+import TransactionForm from '../components/TransactionForm'
 import { Transaction } from '../types'
 
 interface HomeProps {
