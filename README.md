@@ -1,1 +1,0 @@
-# oshin-household-app
