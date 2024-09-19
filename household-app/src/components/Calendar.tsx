@@ -8,15 +8,17 @@ import { calculateDailyBalances } from '../utils/financeCalculations';
 import { formatCurrency } from '../utils/formatting';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { useTheme } from '@mui/material';
+import { isSameMonth } from 'date-fns';
 
 interface CalendarProps {
   monthlyTransactions: Transaction[];
   setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
   setCurrentDay: React.Dispatch<React.SetStateAction<string>>;
   currentDay: string;
+  today: string;
 }
 
-const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentDay}: CalendarProps) => {
+const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentDay, today}: CalendarProps) => {
   const theme = useTheme();
   const dailyBalances = calculateDailyBalances(monthlyTransactions)
 
@@ -57,7 +59,12 @@ const Calendar = ({monthlyTransactions, setCurrentMonth, setCurrentDay, currentD
   }
 
   const handleDateSet = (datesetInfo: DatesSetArg) => {
-    setCurrentMonth(datesetInfo.view.currentStart)
+    const currentMonth = datesetInfo.view.currentStart;
+    setCurrentMonth(currentMonth);
+    const todayDate = new Date();
+    if (isSameMonth(todayDate, currentMonth)) {
+      setCurrentDay(today);
+    }
   }
 
   const handleDateClick = (dateInfo: DateClickArg) => {
