@@ -11,14 +11,25 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import FastfoodIcon from "@mui/icons-material/Fastfood";
+import { Controller, useForm } from "react-hook-form";
 
 interface TransactionFormProps {
   onCloseForm: () => void;
   isEntryDrawerOpen: boolean;
+  currentDay: string;
 }
 
-const TransactionForm = ({ onCloseForm, isEntryDrawerOpen }: TransactionFormProps) => {
+const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: TransactionFormProps) => {
   const formWidth = 320;
+  const { control } = useForm({
+    defaultValues: {
+      type: "expense",
+      date: currentDay,
+      category: "",
+      amount: 0,
+      content: "",
+    }
+  });
   return (
     <Box
       sx={{
@@ -52,29 +63,73 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen }: TransactionFormProp
       </Box>
       <Box component={"form"}>
         <Stack spacing={2}>
-          <ButtonGroup fullWidth>
-            <Button variant={"contained"} color="error">
-              支出
-            </Button>
-            <Button>収入</Button>
-          </ButtonGroup>
-          <TextField
-            label="日付"
-            type="date"
-            InputLabelProps={{
-              shrink: true,
-            }}
+          <Controller
+            name="type"
+            control={control}
+            render={({ field }) => (
+              <ButtonGroup fullWidth>
+                <Button variant={"contained"} color="error">
+                  支出
+                </Button>
+                <Button>収入</Button>
+              </ButtonGroup>
+            )}
           />
-          <TextField id="カテゴリ" label="カテゴリ" select value={"食費"}>
-            <MenuItem value={"食費"}>
-              <ListItemIcon>
-                <FastfoodIcon />
-              </ListItemIcon>
-              食費
-            </MenuItem>
-          </TextField>
-          <TextField label="金額" type="number" />
-          <TextField label="内容" type="text" />
+          <Controller
+            name="date"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="日付"
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="category"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                id="カテゴリ"
+                label="カテゴリ"
+                select
+              >
+                <MenuItem value={"食費"}>
+                  <ListItemIcon>
+                    <FastfoodIcon />
+                  </ListItemIcon>
+                  食費
+                </MenuItem>
+              </TextField>
+            )}
+          />
+          <Controller
+            name="amount"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="金額"
+                type="number"
+              />
+            )}
+          />
+          <Controller
+            name="content"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="内容"
+                type="text"
+              />
+            )}
+          />
           <Button type="submit" variant="contained" color={"primary"} fullWidth>
             保存
           </Button>
