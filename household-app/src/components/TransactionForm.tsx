@@ -194,6 +194,11 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
             render={({ field }) => (
               <TextField
                 {...field}
+                value={field.value === 0 ? "" : field.value}
+                onChange={(e) => {
+                  const newValue = parseInt(e.target.value, 10) || 0;
+                  field.onChange(newValue);
+                }}
                 label="金額"
                 type="number"
               />
