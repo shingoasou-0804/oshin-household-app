@@ -30,6 +30,8 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { ExpenseCategory, IncomeCategory } from "../types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { transactionSchema } from "../validations/schema";
 
 interface TransactionFormProps {
   onCloseForm: () => void;
@@ -72,14 +74,21 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
 
   const [categories, setCategories] = useState(expenseCategories);
 
-  const { control, setValue, watch } = useForm({
+  const {
+    control,
+    setValue,
+    watch,
+    formState: {errors},
+    handleSubmit,
+  } = useForm({
     defaultValues: {
       type: "expense",
       date: currentDay,
       category: "",
       amount: 0,
       content: "",
-    }
+    },
+    resolver: zodResolver(transactionSchema),
   });
 
   const incomeExpenseToggle = (type: IncomeExpense) => {
@@ -90,11 +99,15 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
   useEffect(() => {
     const newCategories = currentType === "expense" ? expenseCategories : incomeCategories;
     setCategories(newCategories);
-  }, [currentType])
+  }, [currentType]);
 
   useEffect(() => {
     setValue("date", currentDay);
-  }, [currentDay])
+  }, [currentDay]);
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
 
   return (
     <Box
@@ -127,7 +140,7 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
           <CloseIcon />
         </IconButton>
       </Box>
-      <Box component={"form"}>
+      <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
           <Controller
             name="type"
@@ -161,6 +174,8 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={!!errors.date}
+                helperText={errors.date?.message}
               />
             )}
           />
@@ -173,10 +188,12 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
                 id="カテゴリ"
                 label="カテゴリ"
                 select
+                error={!!errors.category}
+                helperText={errors.category?.message}
               >
-                {categories.map((category) => (
+                {categories.map((category, index) => (
                   <MenuItem
-                    key={category.label}
+                    key={index}
                     value={category.label}
                   >
                     <ListItemIcon>
@@ -201,6 +218,8 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
                 }}
                 label="金額"
                 type="number"
+                error={!!errors.amount}
+                helperText={errors.amount?.message}
               />
             )}
           />
@@ -212,6 +231,8 @@ const TransactionForm = ({ onCloseForm, isEntryDrawerOpen, currentDay }: Transac
                 {...field}
                 label="内容"
                 type="text"
+                error={!!errors.content}
+                helperText={errors.content?.message}
               />
             )}
           />
