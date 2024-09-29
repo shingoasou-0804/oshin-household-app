@@ -53,6 +53,11 @@ function App() {
   const handleSaveTransaction = async (transaction: Schema) => {
     try {
       const docRef = await addDoc(collection(db, "Transactions"), transaction);
+      const newTransaction = {
+        id: docRef.id,
+        ...transaction,
+      } as Transaction;
+      setTransactions((prevTransaction) => [...prevTransaction, newTransaction]);
     } catch (err) {
       if (isFireStoreError(err)) {
         console.error("Firestore error: ", err)
