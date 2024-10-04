@@ -32,12 +32,14 @@ import { useEffect, useState } from "react";
 import { ExpenseCategory, IncomeCategory } from "../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema, transactionSchema } from "../validations/schema";
+import { Transaction } from '../types';
 
 interface TransactionFormProps {
   onCloseForm: () => void;
   isEntryDrawerOpen: boolean;
   currentDay: string;
   onSaveTransaction: (transaction: Schema) => Promise<void>;
+  selectedTransaction: Transaction | null;
 }
 
 type IncomeExpense = "income" | "expense";
@@ -52,6 +54,7 @@ const TransactionForm = ({
   isEntryDrawerOpen,
   currentDay,
   onSaveTransaction,
+  selectedTransaction
 }: TransactionFormProps) => {
   const formWidth = 320;
 
@@ -123,6 +126,16 @@ const TransactionForm = ({
       content: "",
     });
   };
+
+  useEffect(() => {
+    if (selectedTransaction) {
+      setValue("type", selectedTransaction.type);
+      setValue("date", selectedTransaction.date);
+      setValue("category", selectedTransaction.category);
+      setValue("amount", selectedTransaction.amount);
+      setValue("content", selectedTransaction.content);
+    }
+  }, [selectedTransaction])
 
   return (
     <Box
