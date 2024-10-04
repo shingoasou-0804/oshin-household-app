@@ -134,6 +134,14 @@ const TransactionForm = ({
       setValue("category", selectedTransaction.category);
       setValue("amount", selectedTransaction.amount);
       setValue("content", selectedTransaction.content);
+    } else {
+      reset({
+        type: "expense",
+        date: currentDay,
+        category: "",
+        amount: 0,
+        content: "",
+      });
     }
   }, [selectedTransaction])
 
