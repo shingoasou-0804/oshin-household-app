@@ -72,6 +72,8 @@ function App() {
   const handleDeleteTransaction = async (transactionId: string) => {
     try {
       await deleteDoc(doc(db, "Transactions", transactionId));
+      const filteredTransactions = transactions.filter((transaction) => transaction.id !== transactionId);
+      setTransactions(filteredTransactions);
     } catch (err) {
       if (isFireStoreError(err)) {
         console.error("Firestore error: ", err)

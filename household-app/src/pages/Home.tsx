@@ -74,6 +74,7 @@ const Home = ({
           onSaveTransaction={onSaveTransaction}
           selectedTransaction={selectedTransaction}
           onDeleteTransaction={onDeleteTransaction}
+          setSelectedTransaction={setSelectedTransaction}
         />
       </Box>
     </Box>
