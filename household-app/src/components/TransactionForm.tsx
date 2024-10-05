@@ -40,6 +40,7 @@ interface TransactionFormProps {
   currentDay: string;
   onSaveTransaction: (transaction: Schema) => Promise<void>;
   selectedTransaction: Transaction | null;
+  onDeleteTransaction: (transactionId: string) => Promise<void>;
 }
 
 type IncomeExpense = "income" | "expense";
@@ -54,7 +55,8 @@ const TransactionForm = ({
   isEntryDrawerOpen,
   currentDay,
   onSaveTransaction,
-  selectedTransaction
+  selectedTransaction,
+  onDeleteTransaction,
 }: TransactionFormProps) => {
   const formWidth = 320;
 
@@ -144,6 +146,12 @@ const TransactionForm = ({
       });
     }
   }, [selectedTransaction])
+
+  const handleDelete = () => {
+    if (selectedTransaction) {
+      onDeleteTransaction(selectedTransaction.id);
+    }
+  }
 
   return (
     <Box
@@ -272,9 +280,24 @@ const TransactionForm = ({
               />
             )}
           />
-          <Button type="submit" variant="contained" color={currentType === "income" ? "primary" : "error" } fullWidth>
+          <Button
+            type="submit"
+            variant="contained"
+            color={currentType === "income" ? "primary" : "error"}
+            fullWidth
+          >
             保存
           </Button>
+          { selectedTransaction && (
+            <Button
+              onClick={handleDelete}
+              variant="outlined"
+              color={"secondary"}
+              fullWidth
+            >
+              削除
+            </Button>
+          )}
         </Stack>
       </Box>
     </Box>

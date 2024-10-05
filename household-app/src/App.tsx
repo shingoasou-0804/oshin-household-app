@@ -9,7 +9,7 @@ import { theme } from './theme/theme';
 import { ThemeProvider } from '@emotion/react';
 import { CssBaseline } from '@mui/material';
 import { Transaction } from './types/index';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import { formatMonth } from './utils/formatting';
 import { Schema } from './validations/schema';
@@ -69,6 +69,20 @@ function App() {
     }
   }
 
+  const handleDeleteTransaction = async (transactionId: string) => {
+    try {
+      await deleteDoc(doc(db, "Transactions", transactionId));
+    } catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("Firestore error: ", err)
+        console.error("Firestore error messages: : ", err.message);
+        console.error("Firestore error code: ", err.code);
+      } else {
+        console.error("Genaral error: ", err);
+      }
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -82,6 +96,7 @@ function App() {
                   monthlyTransactions={monthlyTransactions}
                   setCurrentMonth={setCurrentMonth}
                   onSaveTransaction={handleSaveTransaction}
+                  onDeleteTransaction={handleDeleteTransaction}
                 />
               }
             />
