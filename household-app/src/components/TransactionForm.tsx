@@ -42,6 +42,7 @@ interface TransactionFormProps {
   selectedTransaction: Transaction | null;
   onDeleteTransaction: (transactionId: string) => Promise<void>;
   setSelectedTransaction: React.Dispatch<React.SetStateAction<Transaction | null>>;
+  onUpdateTransaction: (transaction: Schema, transactionId: string) => Promise<void>;
 }
 
 type IncomeExpense = "income" | "expense";
@@ -58,7 +59,8 @@ const TransactionForm = ({
   onSaveTransaction,
   selectedTransaction,
   onDeleteTransaction,
-  setSelectedTransaction
+  setSelectedTransaction,
+  onUpdateTransaction
 }: TransactionFormProps) => {
   const formWidth = 320;
 
@@ -121,7 +123,18 @@ const TransactionForm = ({
   }, [currentDay]);
 
   const onSubmit: SubmitHandler<Schema> = (data) => {
-    onSaveTransaction(data);
+    if (selectedTransaction) {
+      onUpdateTransaction(data, selectedTransaction.id).then(() => {
+        setSelectedTransaction(null);
+      }).catch((error) => {
+        console.error(error);
+      });
+    } else {
+      onSaveTransaction(data).then(() => {
+      }).catch((error) => {
+        console.error(error);
+      });
+    }
     reset({
       date: currentDay,
       type: "expense",
@@ -289,7 +302,7 @@ const TransactionForm = ({
             color={currentType === "income" ? "primary" : "error"}
             fullWidth
           >
-            保存
+            {selectedTransaction ? "更新" : "保存"}
           </Button>
           { selectedTransaction && (
             <Button
