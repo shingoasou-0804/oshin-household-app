@@ -9,9 +9,10 @@ import { theme } from './theme/theme';
 import { ThemeProvider } from '@emotion/react';
 import { CssBaseline } from '@mui/material';
 import { Transaction } from './types/index';
-import { collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { formatMonth } from './utils/formatting';
+import { Schema } from './validations/schema';
 
 function App() {
 
@@ -49,13 +50,79 @@ function App() {
     return transaction.date.startsWith(formatMonth(currentMonth));
   });
 
+  const handleSaveTransaction = async (transaction: Schema) => {
+    try {
+      const docRef = await addDoc(collection(db, "Transactions"), transaction);
+      const newTransaction = {
+        id: docRef.id,
+        ...transaction,
+      } as Transaction;
+      setTransactions((prevTransaction) => [...prevTransaction, newTransaction]);
+    } catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("Firestore error: ", err)
+        console.error("Firestore error messages: : ", err.message);
+        console.error("Firestore error code: ", err.code);
+      } else {
+        console.error("Genaral error: ", err);
+      }
+    }
+  }
+
+  const handleDeleteTransaction = async (transactionId: string) => {
+    try {
+      await deleteDoc(doc(db, "Transactions", transactionId));
+      const filteredTransactions = transactions.filter((transaction) => transaction.id !== transactionId);
+      setTransactions(filteredTransactions);
+    } catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("Firestore error: ", err)
+        console.error("Firestore error messages: : ", err.message);
+        console.error("Firestore error code: ", err.code);
+      } else {
+        console.error("Genaral error: ", err);
+      }
+    }
+  }
+
+  const handleUpdateTransaction = async (transaction: Schema, transactionId: string) => {
+    try {
+      const docRef = doc(db, "Transactions", transactionId);
+      await updateDoc(docRef, transaction);
+      const updatedTransactions = transactions.map((t) =>  t.id === transactionId ? {
+        ...t,
+        ...transaction,
+      }: t) as Transaction[];
+      setTransactions(updatedTransactions)
+    } catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("Firestore error: ", err)
+        console.error("Firestore error messages: : ", err.message);
+        console.error("Firestore error code: ", err.code);
+      } else {
+        console.error("Genaral error: ", err);
+      }
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Routes>
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Home monthlyTransactions={monthlyTransactions} setCurrentMonth={setCurrentMonth} />} />
+            <Route
+              index
+              element={
+                <Home
+                  monthlyTransactions={monthlyTransactions}
+                  setCurrentMonth={setCurrentMonth}
+                  onSaveTransaction={handleSaveTransaction}
+                  onDeleteTransaction={handleDeleteTransaction}
+                  onUpdateTransaction={handleUpdateTransaction}
+                />
+              }
+            />
             <Route path="/report" element={<Report />}/>
             <Route path="*" element={<NoMatch />}/>
           </Route>
