@@ -13,14 +13,12 @@ Chartjs.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const BarChart = () => {
   const options = {
+    maintainAspectRatio: false,
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top' as const,
-      },
       title: {
         display: true,
-        text: '月次収支',
+        text: '日別収支',
       },
     },
   };
