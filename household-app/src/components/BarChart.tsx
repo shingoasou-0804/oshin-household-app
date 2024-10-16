@@ -8,10 +8,16 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2';
+import { calculateDailyBalances } from '../utils/financeCalculations';
+import { Transaction } from '../types';
 
 Chartjs.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const BarChart = () => {
+interface BarChartProps {
+  monthlyTransactions: Transaction[]
+}
+
+const BarChart = ({ monthlyTransactions }: BarChartProps) => {
   const options = {
     maintainAspectRatio: false,
     responsive: true,
@@ -22,6 +28,11 @@ const BarChart = () => {
       },
     },
   };
+
+  const dailyBalances = calculateDailyBalances(monthlyTransactions);
+  const dateLabels = Object.keys(dailyBalances);
+  const expenseData = dateLabels.map((day) => dailyBalances[day].expense)
+  const incomeData = dateLabels.map((day) => dailyBalances[day].income)
   const labels = ['2024-10-01', '2024-10-08', '2024-10-16', '2024-10-24'];
   const data = {
     labels,
