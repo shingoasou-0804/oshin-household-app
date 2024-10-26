@@ -1,6 +1,6 @@
 import { Pie } from "react-chartjs-2"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
-import { Box, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import { Box, CircularProgress, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { ExpenseCategory, IncomeCategory, Transaction, TransactionType } from "../types";
 import { useState } from "react";
 import { SelectChangeEvent } from "@mui/material";
@@ -13,6 +13,7 @@ interface CategoryChartProps {
 }
 
 const CategoryChart = ({ monthlyTransactions, isLoading }: CategoryChartProps) => {
+  const theme = useTheme();
   const [selectedType, setSelectedType] = useState<TransactionType>("expense");
   
   const handleChange = (e: SelectChangeEvent<TransactionType>) => {
@@ -30,7 +31,7 @@ const CategoryChart = ({ monthlyTransactions, isLoading }: CategoryChartProps) =
       return acc;
   }, {} as Record<IncomeCategory | ExpenseCategory, number>);
 
-  const categoryLabels = Object.keys(categorySums);
+  const categoryLabels = Object.keys(categorySums) as (IncomeCategory | ExpenseCategory)[];
   const categoryValues = Object.values(categorySums);
 
   const options = {
@@ -38,27 +39,48 @@ const CategoryChart = ({ monthlyTransactions, isLoading }: CategoryChartProps) =
     responsive: true,
   };
 
+  const incomeCategory: Record<IncomeCategory, string> = {
+    給与: theme.palette.incomeCategoryColor.給与,
+    副収入: theme.palette.incomeCategoryColor.副収入,
+    お小遣い: theme.palette.incomeCategoryColor.お小遣い,
+  };
+
+  const expenseCategory: Record<ExpenseCategory, string> = {
+    食費: theme.palette.expenseCategoryColor.食費,
+    日用品: theme.palette.expenseCategoryColor.日用品,
+    交通費: theme.palette.expenseCategoryColor.交通費,
+    医療費: theme.palette.expenseCategoryColor.医療費,
+    保険: theme.palette.expenseCategoryColor.保険,
+    水道光熱費: theme.palette.expenseCategoryColor.水道光熱費,
+    通信費: theme.palette.expenseCategoryColor.通信費,
+    住宅: theme.palette.expenseCategoryColor.住宅,
+    税金: theme.palette.expenseCategoryColor.税金,
+    教育: theme.palette.expenseCategoryColor.教育,
+    交際費: theme.palette.expenseCategoryColor.交際費,
+    衣料品: theme.palette.expenseCategoryColor.衣料品,
+    趣味: theme.palette.expenseCategoryColor.趣味,
+    その他: theme.palette.expenseCategoryColor.その他,
+  };
+
+  const getCategoryColor = (category: IncomeCategory | ExpenseCategory) => {
+    if (selectedType === "income") {
+      return incomeCategory[category as IncomeCategory];
+    } else {
+      return expenseCategory[category as ExpenseCategory];
+    }
+  };
+
   const data: ChartData<"pie"> = {
     labels: categoryLabels,
     datasets: [
       {
         data: categoryValues,
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
+        backgroundColor: categoryLabels.map((category) =>
+          getCategoryColor(category)
+        ),
+        borderColor: categoryLabels.map((category) =>
+          getCategoryColor(category)
+        ),
         borderWidth: 1,
       },
     ],
