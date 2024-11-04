@@ -60,9 +60,10 @@ function TransactionTableHead(props: TransactionTableHeadProps) {
 }
 interface TransactionTableToolbarProps {
   numSelected: number;
+  onDelete: () => void;
 }
 function TransactionTableToolbar(props: TransactionTableToolbarProps) {
-  const { numSelected } = props;
+  const { numSelected, onDelete } = props;
   return (
     <Toolbar
       sx={[
@@ -97,7 +98,7 @@ function TransactionTableToolbar(props: TransactionTableToolbarProps) {
       )}
       {numSelected > 0 && (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={onDelete}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -135,9 +136,13 @@ function FinancialItem({title, value, color}: FinancialItemProps) {
 
 interface TransactionTableProps {
   monthlyTransactions: Transaction[];
+  onDeleteTransaction: (transactionId: string | readonly string[]) => Promise<void>;
 }
 
-export default function TransactionTable({monthlyTransactions}: TransactionTableProps) {
+export default function TransactionTable({
+  monthlyTransactions,
+  onDeleteTransaction,
+}: TransactionTableProps) {
   const theme = useTheme();
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
@@ -180,6 +185,10 @@ export default function TransactionTable({monthlyTransactions}: TransactionTable
     setPage(0);
   };
 
+  const handleDelete = () => {
+    onDeleteTransaction(selected);
+  }
+
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -219,7 +228,10 @@ export default function TransactionTable({monthlyTransactions}: TransactionTable
           color={theme.palette.balanceColor.main}
         />
       </Grid>
-        <TransactionTableToolbar numSelected={selected.length} />
+        <TransactionTableToolbar
+          numSelected={selected.length}
+          onDelete={handleDelete}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
